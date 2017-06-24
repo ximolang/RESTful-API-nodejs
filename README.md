@@ -49,3 +49,21 @@ console.log(`Server start at localhost:${port}`)
 | /api/lists/:list_id | GET | 根据id获取一条列表项数据 |
 | /api/lists/:list_id | PUT | 根据id更新一条列表项数据 |
 | /api/lists/:list_id | DELETE | 根据id删除一条列表项数据 |
+
+## 五、mongoDB数据存储
+
+安装mongoDB之后启动服务：`mongod --config /usr/local/etc/mongod.conf` (mac)
+
+通过mongoose连接数据库：
+```
+const mongoose = require('mongoose')
+const url = 'mongodb://127.0.0.1:27017'
+mongoose.connect(url)
+
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('database opend!')
+})
+```
+
