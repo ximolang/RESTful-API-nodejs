@@ -1,9 +1,18 @@
-// 测试数据
-let listArr = []
-
-
+const mongoose = require('mongoose')
 const express = require('express')
 const bodyParser = require('body-parser')
+let List = require('./models/list.js')
+
+const url = 'mongodb://127.0.0.1:27017'
+mongoose.connect(url)
+
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('database opend!')
+})
+
+// APP
 const app = express()
 
 app.use(bodyParser.urlencoded({extended: true}))
@@ -23,56 +32,49 @@ router.use(function (req, res, next) {
 
 // 默认根路由
 router.get('/', function (req, res) {
-  res.json({message: "欢迎访问通过Nodejs构建的RESTful API"})
+  res.json({message: "Welcome!"})
 })
 
 // 获取数据列表 GET '/lists'
 
 router.route('/lists').get(function (req, res) {
   // 此处为查询数据逻辑
-
-  if (listArr.length === 0) {
-    res.json({
-      message: "列表为空！"
-    })
-  }
-  res.json(listArr)
-  
+  List.find(function (err, lists) {
+    if (err) return res.send(err)
+    res.json(lists)
+  })
 })
 
 // 增加一条数据 POST '/lists'
 
 router.route('/lists').post(function (req, res) {
-  // 此处为模拟获取数据逻辑
-  const id = req.body.id
+  // 此处为获取数据逻辑
   const title = req.body.title
   const content = req.body.content
-  const date = Date.now()
+  const tags = req.body.tags.split(',')
 
-  listArr.push({
-    id: id,
-    title: title,
-    content: content,
-    date: date
+  let listitem = new List()
+  listitem.title = title
+  listitem.content = content
+  listitem.tags = tags
+
+  listitem.save(function (err) {
+    if (err) res.send(err)
+    res.json({message: '数据创建成功！'}) 
   })
-
-  res.json({message: '数据创建成功！'})
 })
 
 // 根据id获取一条数据 GET 'lists/:list_id'
 router.route('/lists/:list_id').get(function (req, res) {
-
   const listid = req.params.list_id
-
-  // 模拟查询取数据
-  let item = null
-  listArr.forEach(function (obj){
-    if (obj.id == listid) item = obj
+  // 查询取数据
+  List.findById(listid, function (err, item) {
+    if (err) res.send(err)
+    res.json(item)
   })
-
-  res.json(item)
-
 })
+
+// 
 
 
 
