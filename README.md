@@ -47,7 +47,7 @@ console.log(`Server start at localhost:${port}`)
 | /api/lists | GET | 获取数据列表，JSON解析为数组格式 |
 | /api/lists | POST | 创建一条列表项数据 |
 | /api/lists/:list_id | GET | 根据id获取一条列表项数据 |
-| /api/lists/:list_id | PUT | 根据id更新一条列表项数据 |
+| /api/lists/:list_id | POST | 根据id更新一条列表项数据 |
 | /api/lists/:list_id | DELETE | 根据id删除一条列表项数据 |
 
 ## 五、mongoDB数据存储
