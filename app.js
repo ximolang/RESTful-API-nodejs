@@ -51,12 +51,19 @@ router.route('/lists').post(function (req, res) {
   // 此处为获取数据逻辑
   const title = req.body.title
   const content = req.body.content
-  const tags = req.body.tags.split(',')
+  let tagArr = []
+  const tags = req.body.tags.trim()
+
+  if (tags.indexOf(',') === -1) {
+    tagArr = new Array(tags)
+  } else {
+    tagArr = tags.split(',')
+  }
 
   let listitem = new List()
   listitem.title = title
   listitem.content = content
-  listitem.tags = tags
+  listitem.tags = tagArr
 
   listitem.save(function (err) {
     if (err) res.send(err)
@@ -74,7 +81,33 @@ router.route('/lists/:list_id').get(function (req, res) {
   })
 })
 
-// 
+// 根据id 删除一条数据
+router.route('/lists/:list_id').delete(function (req, res) {
+  const listid = req.params.list_id
+  let query = List.find({_id: listid}).remove(function (err) {
+    if (err) res.send(err)
+    res.json({message: '删除成功！'})
+  })
+})
+
+// 根据id 修改一条数据
+router.route('/lists/:list_id').post(function (req, res) {
+  const body = req.body
+  const listid = req.params.list_id
+
+  List.findOne({_id: listid}, function (err, doc) {
+    if (err) res.send(err)
+    for (key in body) {
+      console.log(key,body[key])
+      if (key) doc[key] = body[key]
+    }
+    doc.save(function (err) {
+      if (err) res.send(err)
+      res.send({message: '更新成功！'})
+    })
+  })
+
+})
 
 
 
